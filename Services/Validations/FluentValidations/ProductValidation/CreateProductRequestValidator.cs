@@ -1,12 +1,5 @@
 ﻿using FluentValidation;
-using Microsoft.EntityFrameworkCore;
-using NLayerArchitectureV2.Repositories.CoreRepository.Abstract.ProductRepositories;
-using NLayerArchitectureV2.Services.DTOs.Products;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using NLayerArchitectureV2.Services.DTOs.Products.Create;
 
 namespace NLayerArchitectureV2.Services.Validations.FluentValidations.ProductValidation
 {
@@ -27,10 +20,13 @@ namespace NLayerArchitectureV2.Services.Validations.FluentValidations.ProductVal
             RuleFor(x => x.Stock)
                 .InclusiveBetween(1, 100).WithMessage("Stok adedi 1 ile 100 arasında olmalıdır.");
 
+            RuleFor(x => x.CategoryId)
+                .GreaterThan(0).WithMessage("Ürün kategorisi 0'dan büyük olmalıdır.");
+
         }
         /*MustAsync(MustUniqueProductNameAsync).WithMessage("Böyle bir ürün adı bulunmaktadır.");*/
 
-            //.Must(MustUniqueProductName).WithMessage("Böyle bir ürün adı bulunmaktadır."); Birinci Yöntem
+        //.Must(MustUniqueProductName).WithMessage("Böyle bir ürün adı bulunmaktadır."); Birinci Yöntem
         //private async Task<bool> MustUniqueProductNameAsync(string name, CancellationToken cancellationToken)
         //{
         //    return  !await _productRepository.Where(x => x.Name == name).AnyAsync(cancellationToken);

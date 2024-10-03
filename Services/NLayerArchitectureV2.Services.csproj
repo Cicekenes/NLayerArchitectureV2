@@ -13,4 +13,8 @@
 		<ProjectReference Include="..\Repositories\NLayerArchitectureV2.Repositories.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Validations\FluentValidations\CategoryValidation\" />
+	</ItemGroup>
+
 </Project>

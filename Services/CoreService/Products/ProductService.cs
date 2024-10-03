@@ -4,14 +4,10 @@ using NLayerArchitectureV2.Repositories.CoreRepository.Abstract.ProductRepositor
 using NLayerArchitectureV2.Repositories.Entities;
 using NLayerArchitectureV2.Repositories.UnitOfWorks;
 using NLayerArchitectureV2.Services.DTOs.Products;
-using NLayerArchitectureV2.Services.ExceptionHandlers;
+using NLayerArchitectureV2.Services.DTOs.Products.Create;
+using NLayerArchitectureV2.Services.DTOs.Products.Update;
 using NLayerArchitectureV2.Services.ResultPattern;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NLayerArchitectureV2.Services.CoreService.Products
 {
@@ -21,12 +17,13 @@ namespace NLayerArchitectureV2.Services.CoreService.Products
         {
             var products = await _productRepository.GetTopPriceProductsAsync(count);
 
-            var productsDto = products.Select(p => new ProductDto(p.Id, p.Name, p.Price, p.Stock)).ToList();
+            //var productsDto = products.Select(p => new ProductDto(p.Id, p.Name, p.Price, p.Stock)).ToList();
 
+            var productsAsDto = _mapper.Map<List<ProductDto>>(products);
 
             return new ServiceResult<List<ProductDto>>
             {
-                Data = productsDto
+                Data = productsAsDto
             };
         }
         public async Task<ServiceResult<List<ProductDto>>> GetAllAsync()
@@ -68,19 +65,14 @@ namespace NLayerArchitectureV2.Services.CoreService.Products
         public async Task<ServiceResult<CreateProductResponse>> CreateAsync(CreateProductRequest request)
         {
 
-            //var anyProduct = await _productRepository.Where(x => x.Name == request.Name).AnyAsync();
+            var anyProduct = await _productRepository.Where(x => x.Name == request.Name).AnyAsync();
 
-            //if (anyProduct)
-            //{
-            //    return ServiceResult<CreateProductResponse>.Fail("Böyle bir ürün bulunmaktadır", HttpStatusCode.BadRequest);
-            //}
-
-            var product = new Product()
+            if (anyProduct)
             {
-                Name = request.Name,
-                Price = request.Price,
-                Stock = request.Stock
-            };
+                return ServiceResult<CreateProductResponse>.Fail("Böyle bir ürün bulunmaktadır", HttpStatusCode.BadRequest);
+            }
+
+            var product = _mapper.Map<Product>(request);
 
             await _productRepository.AddAsync(product);
             await _unitOfWork.SaveChangesAsync();
@@ -97,9 +89,18 @@ namespace NLayerArchitectureV2.Services.CoreService.Products
                 return ServiceResult.Fail("Product not found", HttpStatusCode.NotFound);
             }
 
-            product.Name = request.Name;
-            product.Price = request.Price;
-            product.Stock = request.Stock;
+            var isProductNameExists = await _productRepository.Where(x => x.Name == request.Name && x.Id != product.Id).AnyAsync();
+
+            if (isProductNameExists)
+            {
+                return ServiceResult.Fail("Ürün ismi veritabanında bulunmaktadır.", HttpStatusCode.BadRequest);
+            }
+
+            //product.Name = request.Name;
+            //product.Price = request.Price;
+            //product.Stock = request.Stock;
+
+            product = _mapper.Map(request, product);
 
             _productRepository.Update(product);
             await _unitOfWork.SaveChangesAsync();

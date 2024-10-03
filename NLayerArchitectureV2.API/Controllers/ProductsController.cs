@@ -1,8 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using NLayerArchitectureV2.Services.CoreService.Products;
-using NLayerArchitectureV2.Services.DTOs.Products;
-using System.Net;
+using NLayerArchitectureV2.Services.DTOs.Products.Create;
+using NLayerArchitectureV2.Services.DTOs.Products.Update;
 
 namespace NLayerArchitectureV2.API.Controllers
 {

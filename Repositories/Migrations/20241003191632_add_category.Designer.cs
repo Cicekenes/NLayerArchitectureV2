@@ -11,8 +11,8 @@ using NLayerArchitectureV2.Repositories.Database;
 namespace NLayerArchitectureV2.Repositories.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240923193433_initial")]
-    partial class initial
+    [Migration("20241003191632_add_category")]
+    partial class add_category
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,24 @@ namespace NLayerArchitectureV2.Repositories.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("NLayerArchitectureV2.Repositories.Entities.Category", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Categories");
+                });
+
             modelBuilder.Entity("NLayerArchitectureV2.Repositories.Entities.Product", b =>
                 {
                     b.Property<int>("Id")
@@ -31,6 +49,9 @@ namespace NLayerArchitectureV2.Repositories.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -45,7 +66,25 @@ namespace NLayerArchitectureV2.Repositories.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CategoryId");
+
                     b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("NLayerArchitectureV2.Repositories.Entities.Product", b =>
+                {
+                    b.HasOne("NLayerArchitectureV2.Repositories.Entities.Category", "Category")
+                        .WithMany("Products")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("NLayerArchitectureV2.Repositories.Entities.Category", b =>
+                {
+                    b.Navigation("Products");
                 });
 #pragma warning restore 612, 618
         }

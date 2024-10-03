@@ -1,17 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq.Expressions;
 
 namespace NLayerArchitectureV2.Repositories.CoreRepository
 {
     public interface IGenericRepository<T> where T : class
     {
         IQueryable<T> GetAll();
-        IQueryable<T> Where(Expression<Func<T,bool>> predicate);
+        IQueryable<T> Where(Expression<Func<T, bool>> predicate);
         ValueTask<T?> GetByIdAsync(int id);
         ValueTask AddAsync(T entity);
         void Update(T entity);

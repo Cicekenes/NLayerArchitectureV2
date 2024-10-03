@@ -1,19 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using NLayerArchitectureV2.Repositories.CoreRepository;
+using NLayerArchitectureV2.Repositories.CoreRepository.Abstract.CategoryRepositories;
 using NLayerArchitectureV2.Repositories.CoreRepository.Abstract.ProductRepositories;
+using NLayerArchitectureV2.Repositories.CoreRepository.Concrete.CategoryRepositories;
 using NLayerArchitectureV2.Repositories.CoreRepository.Concrete.ProductRepositories;
 using NLayerArchitectureV2.Repositories.Database;
+using NLayerArchitectureV2.Repositories.Interceptors;
 using NLayerArchitectureV2.Repositories.OptionsPattern;
 using NLayerArchitectureV2.Repositories.RepositoryAssemblies;
 using NLayerArchitectureV2.Repositories.UnitOfWorks;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NLayerArchitectureV2.Repositories.ServiceRegistrations
 {
@@ -29,10 +26,12 @@ namespace NLayerArchitectureV2.Repositories.ServiceRegistrations
                 {
                     sqlServerOptionsAction.MigrationsAssembly(typeof(RepositoryAssembly).Assembly.FullName);
                 });
+                options.AddInterceptors(new AuditDbContextInterceptor());
             });
 
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             return services;
         }
