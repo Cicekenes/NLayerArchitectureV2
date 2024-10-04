@@ -2,7 +2,7 @@
 
 namespace NLayerArchitectureV2.Repositories.CoreRepository.Abstract.ProductRepositories
 {
-    public interface IProductRepository : IGenericRepository<Product>
+    public interface IProductRepository : IGenericRepository<Product, int>
     {
         Task<List<Product>> GetTopPriceProductsAsync(int count);
     }

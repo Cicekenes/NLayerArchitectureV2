@@ -1,10 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NLayerArchitectureV2.Repositories.Database;
+using NLayerArchitectureV2.Repositories.Entities;
 using System.Linq.Expressions;
 
 namespace NLayerArchitectureV2.Repositories.CoreRepository
 {
-    public class GenericRepository<T>(AppDbContext context) : IGenericRepository<T> where T : class
+    public class GenericRepository<T, TId>(AppDbContext context) : IGenericRepository<T, TId> where T : BaseEntity<TId> where TId : struct
     {
         protected AppDbContext Context = context;
         private readonly DbSet<T> _dbSet = context.Set<T>();
@@ -14,6 +15,6 @@ namespace NLayerArchitectureV2.Repositories.CoreRepository
         public ValueTask<T?> GetByIdAsync(int id) => _dbSet.FindAsync(id);
         public void Update(T entity) => _dbSet.Update(entity);
         public IQueryable<T> Where(Expression<Func<T, bool>> predicate) => _dbSet.Where(predicate).AsNoTracking();
-
+        public async Task<bool> AnyAsync(TId id) => await _dbSet.AnyAsync(x => x.Id.Equals(id));
     }
 }

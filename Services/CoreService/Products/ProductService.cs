@@ -82,25 +82,16 @@ namespace NLayerArchitectureV2.Services.CoreService.Products
 
         public async Task<ServiceResult> UpdateAsync(int id, UpdateProductRequest request)
         {
-            var product = await _productRepository.GetByIdAsync(id);
-
-            if (product is null)
-            {
-                return ServiceResult.Fail("Product not found", HttpStatusCode.NotFound);
-            }
-
-            var isProductNameExists = await _productRepository.Where(x => x.Name == request.Name && x.Id != product.Id).AnyAsync();
+          
+            var isProductNameExists = await _productRepository.Where(x => x.Name == request.Name && x.Id != id).AnyAsync();
 
             if (isProductNameExists)
             {
                 return ServiceResult.Fail("Ürün ismi veritabanında bulunmaktadır.", HttpStatusCode.BadRequest);
             }
 
-            //product.Name = request.Name;
-            //product.Price = request.Price;
-            //product.Stock = request.Stock;
-
-            product = _mapper.Map(request, product);
+            var product = _mapper.Map<Product>(request);
+            product.Id = id;
 
             _productRepository.Update(product);
             await _unitOfWork.SaveChangesAsync();
@@ -128,12 +119,6 @@ namespace NLayerArchitectureV2.Services.CoreService.Products
         public async Task<ServiceResult> DeleteAsync(int id)
         {
             var product = await _productRepository.GetByIdAsync(id);
-
-            if (product is null)
-            {
-                return ServiceResult.Fail("Product not found", HttpStatusCode.NotFound);
-            }
-
             _productRepository.Delete(product);
             await _unitOfWork.SaveChangesAsync();
             return ServiceResult.Success(HttpStatusCode.NoContent);

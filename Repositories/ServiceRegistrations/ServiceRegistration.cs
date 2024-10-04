@@ -25,11 +25,12 @@ namespace NLayerArchitectureV2.Repositories.ServiceRegistrations
                 options.UseSqlServer(connectionStrings!.SqlServer, sqlServerOptionsAction =>
                 {
                     sqlServerOptionsAction.MigrationsAssembly(typeof(RepositoryAssembly).Assembly.FullName);
+                    sqlServerOptionsAction.EnableRetryOnFailure();
                 });
                 options.AddInterceptors(new AuditDbContextInterceptor());
             });
 
-            services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            services.AddScoped(typeof(IGenericRepository<,>), typeof(GenericRepository<,>));
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();

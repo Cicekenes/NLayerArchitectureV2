@@ -5,7 +5,7 @@ using NLayerArchitectureV2.Repositories.Entities;
 
 namespace NLayerArchitectureV2.Repositories.CoreRepository.Concrete.CategoryRepositories
 {
-    public class CategoryRepository(AppDbContext context) : GenericRepository<Category>(context), ICategoryRepository
+    public class CategoryRepository(AppDbContext context) : GenericRepository<Category,int>(context), ICategoryRepository
     {
         public IQueryable<Category?> GetCategoryWithProducts()
         {

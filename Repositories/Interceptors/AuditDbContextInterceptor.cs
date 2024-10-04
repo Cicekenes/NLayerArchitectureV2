@@ -32,7 +32,11 @@ namespace NLayerArchitectureV2.Repositories.Interceptors
             foreach (var entityEntry in eventData.Context!.ChangeTracker.Entries().ToList())
             {
                 if (entityEntry.Entity is not IAuditEntity auditEntity) continue;
+
+                if (entityEntry.State is not (EntityState.Added or EntityState.Modified)) continue;
+
                 _behaviors[entityEntry.State](eventData.Context, auditEntity);
+
             }
 
             return base.SavingChangesAsync(eventData, result, cancellationToken);
